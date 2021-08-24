@@ -382,6 +382,21 @@ typedef enum
     SPINEL_DATATYPE_UINT32_S /* ? */           \
     SPINEL_DATATYPE_UINT32_S /* ? */           \
     SPINEL_DATATYPE_UINT32_S /* ? */           \
+    SPINEL_DATATYPE_UINT32_S /* ? */           \
+    SPINEL_DATATYPE_UINT32_S /* ? */           \
+    SPINEL_DATATYPE_UINT32_S /* ? */           \
+    SPINEL_DATATYPE_UINT32_S /* ? */           \
+    SPINEL_DATATYPE_UINT32_S /* ? */           \
+    SPINEL_DATATYPE_UINT32_S /* ? */           \
+    SPINEL_DATATYPE_UINT32_S /* ? */           \
+    SPINEL_DATATYPE_UINT32_S /* ? */           \
+    SPINEL_DATATYPE_UINT32_S /* ? */           \
+    SPINEL_DATATYPE_UINT32_S /* ? */           \
+    SPINEL_DATATYPE_UINT32_S /* ? */           \
+    SPINEL_DATATYPE_UINT32_S /* ? */           \
+    SPINEL_DATATYPE_UINT32_S /* ? */           \
+    SPINEL_DATATYPE_UINT32_S /* ? */           \
+    SPINEL_DATATYPE_UINT32_S /* ? */           \
     SPINEL_DATATYPE_UINT64_S /* ? */           \
     SPINEL_DATATYPE_UINT64_S /* ? */           \
     SPINEL_DATATYPE_UINT64_S /* ? */
@@ -390,14 +405,29 @@ typedef enum
  * @brief Encodes an instance of @ref SPINEL_DATATYPE_NRF_802154_DBG_STATS_S data type.
  */
 #define NRF_802154_DGB_STATS_ENCODE(dbg_st) \
-    ((dbg_st).st_cnt.cca_failed_attempts),  \
-    ((dbg_st).st_cnt.received_frames),        \
+    ((dbg_st).st_cnt.cca_failed_attempts), \
+    ((dbg_st).st_cnt.received_frames), \
     ((dbg_st).st_cnt.received_energy_events), \
     ((dbg_st).st_cnt.received_preambles), \
     ((dbg_st).st_cnt.coex_requests), \
     ((dbg_st).st_cnt.coex_granted_requests), \
     ((dbg_st).st_cnt.coex_denied_requests), \
     ((dbg_st).st_cnt.coex_unsolicited_grants), \
+    ((dbg_st).st_cnt.tx_csma_ca_start), \
+    ((dbg_st).st_cnt.tx_starded), \
+    ((dbg_st).st_cnt.tx0_ok), \
+    ((dbg_st).st_cnt.tx1_ok), \
+    ((dbg_st).st_cnt.tx_fail_busy_channel), \
+    ((dbg_st).st_cnt.tx_fail_invalid_ack), \
+    ((dbg_st).st_cnt.tx_fail_no_mem), \
+    ((dbg_st).st_cnt.tx_fail_timeslot_ended), \
+    ((dbg_st).st_cnt.tx_fail_no_ack), \
+    ((dbg_st).st_cnt.tx_fail_aborted), \
+    ((dbg_st).st_cnt.tx_fail_timeslot_denied), \
+    ((dbg_st).st_cnt.tx_fail_timeout), \
+    ((dbg_st).st_cnt.csma_ca_aborted), \
+    ((dbg_st).st_cnt.csma_ca_fail_hook), \
+    ((dbg_st).st_cnt.csma_ca_fail_busy_channel), \
     ((dbg_st).st_tot.total_listening_time), \
     ((dbg_st).st_tot.total_receive_time), \
     ((dbg_st).st_tot.total_transmit_time)
@@ -414,6 +444,21 @@ typedef enum
     (&(dbg_st).st_cnt.coex_granted_requests), \
     (&(dbg_st).st_cnt.coex_denied_requests), \
     (&(dbg_st).st_cnt.coex_unsolicited_grants), \
+    (&(dbg_st).st_cnt.tx_csma_ca_start), \
+    (&(dbg_st).st_cnt.tx_starded), \
+    (&(dbg_st).st_cnt.tx0_ok), \
+    (&(dbg_st).st_cnt.tx1_ok), \
+    (&(dbg_st).st_cnt.tx_fail_busy_channel), \
+    (&(dbg_st).st_cnt.tx_fail_invalid_ack), \
+    (&(dbg_st).st_cnt.tx_fail_no_mem), \
+    (&(dbg_st).st_cnt.tx_fail_timeslot_ended), \
+    (&(dbg_st).st_cnt.tx_fail_no_ack), \
+    (&(dbg_st).st_cnt.tx_fail_aborted), \
+    (&(dbg_st).st_cnt.tx_fail_timeslot_denied), \
+    (&(dbg_st).st_cnt.tx_fail_timeout), \
+    (&(dbg_st).st_cnt.csma_ca_aborted), \
+    (&(dbg_st).st_cnt.csma_ca_fail_hook), \
+    (&(dbg_st).st_cnt.csma_ca_fail_busy_channel), \
     (&(dbg_st).st_tot.total_listening_time), \
     (&(dbg_st).st_tot.total_receive_time), \
     (&(dbg_st).st_tot.total_transmit_time)

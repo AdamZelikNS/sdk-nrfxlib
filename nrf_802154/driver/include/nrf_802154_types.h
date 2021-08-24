@@ -289,6 +289,26 @@ typedef struct
     uint32_t coex_denied_requests;
     /**@brief Number of coex grant activations that have been not requested. */
     uint32_t coex_unsolicited_grants;
+
+    uint32_t tx_csma_ca_start;        // void nrf_802154_transmit_csma_ca_raw(const uint8_t * p_data);
+    uint32_t tx_starded;              // nrf_802154_core_transmit() --> tx_init()
+    uint32_t tx0_ok;                  // void nrf_802154_trx_transmit_frame_started(void)
+    uint32_t tx1_ok;                  // void nrf_802154_trx_transmit_frame_transmitted(void)
+
+    //         NRF_802154_TX_ERROR_.. -->
+    uint32_t tx_fail_busy_channel;    // 0x01: cca reported busy channel before the transmission.
+    uint32_t tx_fail_invalid_ack;     // 0x02: received ack frame is other than expected.
+    uint32_t tx_fail_no_mem;          // 0x03: no receive buffer is available to receive an ack.
+    uint32_t tx_fail_timeslot_ended;  // 0x04: radio timeslot ended during the transmission procedure.
+    uint32_t tx_fail_no_ack;          // 0x05: ack frame was not received during the timeout period.
+    uint32_t tx_fail_aborted;         // 0x06: procedure was aborted by another operation.
+    uint32_t tx_fail_timeslot_denied; // 0x07: transmission did not start due to a denied timeslot request.
+    uint32_t tx_fail_timeout;         // 0x08: timeout specified for a transmission has been reached.
+
+    uint32_t csma_ca_aborted;         // nrf_802154_csma_ca_abort()->procedure_stop()
+    uint32_t csma_ca_fail_hook;       // nrf_802154_csma_ca_tx_failed_hook()
+    uint32_t csma_ca_fail_busy_channel;  // csma_ca --> nrf_802154_notify_transmit_failed(TX_ERROR_BUSY_CHANNEL);
+
 } nrf_802154_stat_counters_t;
 
 /**

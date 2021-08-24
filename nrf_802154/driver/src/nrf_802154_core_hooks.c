@@ -261,6 +261,13 @@ bool nrf_802154_core_hooks_tx_failed(const uint8_t * p_frame, nrf_802154_tx_erro
 
         if (!result)
         {
+            int err_id = (int)error;
+            if ((err_id > 0) && (err_id <= NRF_802154_TX_ERROR_FRAME_COUNTER_ERROR))
+            {
+                extern volatile nrf_802154_stats_t g_nrf_802154_stats;
+                volatile uint32_t * p_cntr =  &(g_nrf_802154_stats.counters.tx_fail_busy_channel);
+                p_cntr[err_id - 1] += 1;
+            }
             break;
         }
     }

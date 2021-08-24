@@ -1962,7 +1962,7 @@ void nrf_802154_trx_receive_frame_received(void)
 void nrf_802154_trx_transmit_frame_started(void)
 {
     nrf_802154_log_function_enter(NRF_802154_LOG_VERBOSITY_LOW);
-
+    nrf_802154_stat_counter_increment(tx0_ok);
     assert((m_state == RADIO_STATE_TX) || (m_state == RADIO_STATE_CCA_TX));
     transmit_started_notify();
 
@@ -2010,7 +2010,7 @@ void nrf_802154_trx_transmit_ack_transmitted(void)
 void nrf_802154_trx_transmit_frame_transmitted(void)
 {
     nrf_802154_log_function_enter(NRF_802154_LOG_VERBOSITY_LOW);
-
+    nrf_802154_stat_counter_increment(tx1_ok);
 #if (NRF_802154_TOTAL_TIMES_MEASUREMENT_ENABLED)
     uint32_t t_listening = 0U;
     uint32_t t_transmit  = 0U;
@@ -2504,6 +2504,7 @@ bool nrf_802154_core_transmit(nrf_802154_term_t              term_lvl,
 
                 // coverity[check_return]
                 result = tx_init(p_data, p_params->cca);
+                nrf_802154_stat_counter_increment(tx_starded);
                 if (p_params->immediate)
                 {
                     if (!result)

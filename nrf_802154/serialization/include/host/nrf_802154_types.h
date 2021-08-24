@@ -179,6 +179,25 @@ typedef struct
     uint32_t coex_denied_requests;
     /**@brief Number of coex grant activations that have been not requested. */
     uint32_t coex_unsolicited_grants;
+
+    uint32_t tx_csma_ca_start;
+    uint32_t tx_starded;
+    uint32_t tx0_ok;
+    uint32_t tx1_ok;
+
+    uint32_t tx_fail_busy_channel;    // 0x01 // !< cca reported busy channel before the transmission.
+    uint32_t tx_fail_invalid_ack;     // 0x02 // !< received ack frame is other than expected.
+    uint32_t tx_fail_no_mem;          // 0x03 // !< no receive buffer is available to receive an ack.
+    uint32_t tx_fail_timeslot_ended;  // 0x04 // !< radio timeslot ended during the transmission procedure.
+    uint32_t tx_fail_no_ack;          // 0x05 // !< ack frame was not received during the timeout period.
+    uint32_t tx_fail_aborted;         // 0x06 // !< procedure was aborted by another operation.
+    uint32_t tx_fail_timeslot_denied; // 0x07 // !< transmission did not start due to a denied timeslot request.
+    uint32_t tx_fail_timeout;         // 0x08 // !< timeout specified for a transmission has been reached.
+
+    uint32_t csma_ca_aborted;
+    uint32_t csma_ca_fail_hook;
+    uint32_t csma_ca_fail_busy_channel;
+
 } nrf_802154_stat_counters_t;
 
 /**

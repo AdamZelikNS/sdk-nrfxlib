@@ -145,6 +145,7 @@ static void notify_busy_channel(bool result)
     // the comparison uses `greater or equal` instead of `greater than`.
     if (!result && (m_nb >= nrf_802154_pib_csmaca_max_backoffs_get()))
     {
+        nrf_802154_stat_counter_increment(csma_ca_fail_busy_channel);
         nrf_802154_notify_transmit_failed(mp_data, NRF_802154_TX_ERROR_BUSY_CHANNEL);
     }
 
@@ -319,6 +320,7 @@ bool nrf_802154_csma_ca_abort(nrf_802154_term_t term_lvl, req_originator_t req_o
     {
         // Stop CSMA-CA if termination level is high enough.
         procedure_stop();
+        nrf_802154_stat_counter_increment(csma_ca_aborted);
     }
     else
     {
@@ -336,7 +338,7 @@ bool nrf_802154_csma_ca_tx_failed_hook(const uint8_t * p_frame, nrf_802154_tx_er
     bool result = true;
 
     nrf_802154_log_function_enter(NRF_802154_LOG_VERBOSITY_LOW);
-
+    nrf_802154_stat_counter_increment(csma_ca_fail_hook);
     switch (error)
     {
         /* Below errors mean a failure occurred during the frame processing and the frame cannot be

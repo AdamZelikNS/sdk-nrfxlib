@@ -797,7 +797,7 @@ void nrf_802154_transmit_csma_ca_raw(const uint8_t * p_data)
     nrf_802154_log_function_enter(NRF_802154_LOG_VERBOSITY_LOW);
 
     nrf_802154_csma_ca_start(p_data, false);
-
+    nrf_802154_stat_counter_increment(tx_csma_ca_start);
     nrf_802154_log_function_exit(NRF_802154_LOG_VERBOSITY_LOW);
 }
 
