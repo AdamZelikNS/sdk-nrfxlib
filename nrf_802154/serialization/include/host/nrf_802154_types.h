@@ -87,7 +87,24 @@ typedef uint8_t nrf_802154_ed_error_t;
  */
 typedef uint8_t nrf_802154_cca_error_t;
 
-#define NRF_802154_CCA_ERROR_ABORTED 0x01 // !< Procedure was aborted by another operation.
+#define NRF_802154_CCA_ERROR_ABORTED      0x01 // !< Procedure was aborted by another operation.
+
+/** @brief RADIO Clear Channel Assessment modes. */
+#define NRF_RADIO_CCA_MODE_ED             0x00
+#define NRF_RADIO_CCA_MODE_CARRIER        0x01
+#define NRF_RADIO_CCA_MODE_CARRIER_AND_ED 0x02
+#define NRF_RADIO_CCA_MODE_CARRIER_OR_ED  0x03
+
+/**
+ * @brief Structure for configuring CCA.
+ */
+typedef struct
+{
+    uint8_t mode;           // !< CCA mode.
+    uint8_t ed_threshold;   // !< Busy threshold of the CCA energy. Not used in @ref NRF_RADIO_CCA_MODE_CARRIER.
+    uint8_t corr_threshold; // !< Busy threshold of the CCA correlator. Not used in @ref NRF_RADIO_CCA_MODE_ED.
+    uint8_t corr_limit;     // !< Limit of occurrences above the busy threshold of the CCA correlator. Not used in @ref NRF_RADIO_CCA_MODE_ED.
+} nrf_802154_cca_cfg_t;
 
 /**
  * @brief Types of data that can be set in an ACK message.
@@ -138,6 +155,52 @@ typedef uint32_t nrf_802154_capabilities_t;
 #define NRF_802154_CAPABILITY_IFS           (1UL << 5UL) // !< Inter-frame spacing supported
 #define NRF_802154_CAPABILITY_TIMESTAMP     (1UL << 6UL) // !< Frame timestamping supported
 #define NRF_802154_CAPABILITY_SECURITY      (1UL << 7UL) // !< Frame security supported
+
+/**
+ * @brief Type of structure holding statistic counters.
+ *
+ * This structure holds counters of @c uint32_t type only.
+ */
+typedef struct
+{
+    /**@brief Number of failed CCA attempts. */
+    uint32_t cca_failed_attempts;
+    /**@brief Number of frames received with correct CRC and with filtering passing. */
+    uint32_t received_frames;
+    /**@brief Number of times energy was detected in receive mode.*/
+    uint32_t received_energy_events;
+    /**@brief Number of times a preamble was received in receive mode. */
+    uint32_t received_preambles;
+    /**@brief Number of coex requests issued to coex arbiter. */
+    uint32_t coex_requests;
+    /**@brief Number of coex requests issued to coex arbiter that have been granted. */
+    uint32_t coex_granted_requests;
+    /**@brief Number of coex requests issued to coex arbiter that have been denied. */
+    uint32_t coex_denied_requests;
+    /**@brief Number of coex grant activations that have been not requested. */
+    uint32_t coex_unsolicited_grants;
+} nrf_802154_stat_counters_t;
+
+/**
+ * @brief Type of structure holding total times spent in certain states.
+ *
+ * This structure holds fields of @c uint64_t type only.
+ */
+typedef struct
+{
+    /**@brief Total time in microseconds spent with receiver turned on, but not actually receiving any frames. */
+    uint64_t total_listening_time;
+    /**@brief Total time in microseconds spent with receiver turned on and actually receiving frames. */
+    uint64_t total_receive_time;
+    /**@brief Total time in microseconds spent on transmission. */
+    uint64_t total_transmit_time;
+} nrf_802154_stat_totals_t;
+
+typedef struct
+{
+    nrf_802154_stat_counters_t st_cnt;
+    nrf_802154_stat_totals_t   st_tot;
+} nrf_802154_dbg_stats_t;
 
 /**
  *@}

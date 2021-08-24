@@ -279,6 +279,21 @@ typedef enum
     SPINEL_PROP_VENDOR_NORDIC_NRF_802154_RETRANSMIT_CSMA_CA_RAW =
         SPINEL_PROP_VENDOR_NORDIC_NRF_802154__BEGIN + 35,
 
+    /**
+     * Vendor property for nrf_802154_cca_cfg_get serialization.
+     */
+    SPINEL_PROP_VENDOR_NORDIC_NRF_802154_CCA_CFG_GET =
+        SPINEL_PROP_VENDOR_NORDIC_NRF_802154__BEGIN + 36,
+
+    /**
+     * Vendor property for nrf_802154_cca_cfg_set serialization.
+     */
+    SPINEL_PROP_VENDOR_NORDIC_NRF_802154_CCA_CFG_SET =
+        SPINEL_PROP_VENDOR_NORDIC_NRF_802154__BEGIN + 37,
+
+    SPINEL_PROP_VENDOR_NORDIC_NRF_802154_DBG_STATS_GET =
+        SPINEL_PROP_VENDOR_NORDIC_NRF_802154__BEGIN + 38,
+
 } spinel_prop_vendor_key_t;
 
 /**
@@ -330,6 +345,78 @@ typedef enum
         SPINEL_DATATYPE_UINT32_S /* Data handle */  \
         SPINEL_DATATYPE_DATA_S   /* Data content */ \
                             )
+
+/**
+ * @brief Spinel data type description for nrf_802154_cca_cfg_t.
+ */
+#define SPINEL_DATATYPE_NRF_802154_CCA_CFG_S     \
+    SPINEL_DATATYPE_UINT8_S /* mode */           \
+    SPINEL_DATATYPE_UINT8_S /* ed_threshold */   \
+    SPINEL_DATATYPE_UINT8_S /* corr_threshold */ \
+    SPINEL_DATATYPE_UINT8_S /* corr_limit */
+
+/**
+ * @brief Encodes an instance of @ref SPINEL_DATATYPE_NRF_802154_CCA_CFG_S data type.
+ */
+#define NRF_802154_CCA_CFG_ENCODE(cca_cfg) \
+    ((cca_cfg).mode), ((cca_cfg).ed_threshold), ((cca_cfg).corr_threshold), ((cca_cfg).corr_limit)
+
+/**
+ * @brief Decodes an instance of @ref SPINEL_DATATYPE_NRF_802154_CCA_CFG_S data type.
+ */
+#define NRF_802154_CCA_CFG_DECODE(cca_cfg) \
+    (&(cca_cfg).mode),                     \
+    (&(cca_cfg).ed_threshold),             \
+    (&(cca_cfg).corr_threshold),           \
+    (&(cca_cfg).corr_limit)
+
+/**
+ * @brief Spinel data type description for nrf_802154_dbg_stats_t.
+ */
+#define SPINEL_DATATYPE_NRF_802154_DBG_STATS_S \
+    SPINEL_DATATYPE_UINT32_S /* ? */           \
+    SPINEL_DATATYPE_UINT32_S /* ? */           \
+    SPINEL_DATATYPE_UINT32_S /* ? */           \
+    SPINEL_DATATYPE_UINT32_S /* ? */           \
+    SPINEL_DATATYPE_UINT32_S /* ? */           \
+    SPINEL_DATATYPE_UINT32_S /* ? */           \
+    SPINEL_DATATYPE_UINT32_S /* ? */           \
+    SPINEL_DATATYPE_UINT32_S /* ? */           \
+    SPINEL_DATATYPE_UINT64_S /* ? */           \
+    SPINEL_DATATYPE_UINT64_S /* ? */           \
+    SPINEL_DATATYPE_UINT64_S /* ? */
+
+/**
+ * @brief Encodes an instance of @ref SPINEL_DATATYPE_NRF_802154_DBG_STATS_S data type.
+ */
+#define NRF_802154_DGB_STATS_ENCODE(dbg_st) \
+    ((dbg_st).st_cnt.cca_failed_attempts),  \
+    ((dbg_st).st_cnt.received_frames),        \
+    ((dbg_st).st_cnt.received_energy_events), \
+    ((dbg_st).st_cnt.received_preambles), \
+    ((dbg_st).st_cnt.coex_requests), \
+    ((dbg_st).st_cnt.coex_granted_requests), \
+    ((dbg_st).st_cnt.coex_denied_requests), \
+    ((dbg_st).st_cnt.coex_unsolicited_grants), \
+    ((dbg_st).st_tot.total_listening_time), \
+    ((dbg_st).st_tot.total_receive_time), \
+    ((dbg_st).st_tot.total_transmit_time)
+
+/**
+ * @brief Decodes an instance of @ref SPINEL_DATATYPE_NRF_802154_DBG_STATS_S data type.
+ */
+#define NRF_802154_DGB_STATS_DECODE(dbg_st) \
+    (&(dbg_st).st_cnt.cca_failed_attempts), \
+    (&(dbg_st).st_cnt.received_frames), \
+    (&(dbg_st).st_cnt.received_energy_events), \
+    (&(dbg_st).st_cnt.received_preambles), \
+    (&(dbg_st).st_cnt.coex_requests), \
+    (&(dbg_st).st_cnt.coex_granted_requests), \
+    (&(dbg_st).st_cnt.coex_denied_requests), \
+    (&(dbg_st).st_cnt.coex_unsolicited_grants), \
+    (&(dbg_st).st_tot.total_listening_time), \
+    (&(dbg_st).st_tot.total_receive_time), \
+    (&(dbg_st).st_tot.total_transmit_time)
 
 /**
  * @brief Spinel data type description for SPINEL_PROP_LAST_STATUS.
@@ -591,6 +678,31 @@ typedef enum
  * @brief Spinel data type description for nrf_802154_time_get_ret.
  */
 #define SPINEL_DATATYPE_NRF_802154_TIME_GET_RET         SPINEL_DATATYPE_UINT32_S
+
+/**
+ * @brief Spinel data type description for nrf_802154_cca_cfg_get.
+ */
+#define SPINEL_DATATYPE_NRF_802154_CCA_CFG_GET          SPINEL_DATATYPE_NULL_S
+
+/**
+ * @brief Spinel data type description for nrf_802154_cca_cfg_get_ret.
+ */
+#define SPINEL_DATATYPE_NRF_802154_CCA_CFG_GET_RET      SPINEL_DATATYPE_NRF_802154_CCA_CFG_S
+
+/**
+ * @brief Spinel data type description for nrf_802154_cca_cfg_get.
+ */
+#define SPINEL_DATATYPE_NRF_802154_CCA_CFG_SET          SPINEL_DATATYPE_NRF_802154_CCA_CFG_S
+
+/**
+ * @brief Spinel data type description for nrf_802154_cca_cfg_get.
+ */
+#define SPINEL_DATATYPE_NRF_802154_DBG_STATS_GET        SPINEL_DATATYPE_NULL_S
+
+/**
+ * @brief Spinel data type description for nrf_802154_cca_cfg_get_ret.
+ */
+#define SPINEL_DATATYPE_NRF_802154_DBG_STATS_GET_RET    SPINEL_DATATYPE_NRF_802154_DBG_STATS_S
 
 #ifdef __cplusplus
 }

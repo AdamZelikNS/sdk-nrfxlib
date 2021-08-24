@@ -200,6 +200,21 @@ bool nrf_802154_pending_bit_for_addr_clear(const uint8_t * p_addr, bool extended
 void nrf_802154_pending_bit_for_addr_reset(bool extended);
 
 /**
+ * @brief Configures the radio CCA mode and threshold.
+ *
+ * @param[in]  p_cca_cfg  Pointer to the CCA configuration structure. Only fields relevant to
+ *                        the selected mode are updated.
+ */
+void nrf_802154_cca_cfg_set(const nrf_802154_cca_cfg_t * p_cca_cfg);
+
+/**
+ * @brief Gets the current radio CCA configuration.
+ *
+ * @param[out]  p_cca_cfg  Pointer to the structure for the current CCA configuration.
+ */
+void nrf_802154_cca_cfg_get(nrf_802154_cca_cfg_t * p_cca_cfg);
+
+/**
  * @brief Initializes the 802.15.4 driver.
  *
  * This function initializes the RADIO peripheral in the @ref RADIO_STATE_SLEEP state.
@@ -470,5 +485,22 @@ nrf_802154_capabilities_t nrf_802154_capabilities_get(void);
  * @returns Current time in microseconds.
  */
 uint32_t nrf_802154_time_get(void);
+
+/**
+ * @brief Get current statistics.
+ *
+ * @note This returns part of information returned by @ref nrf_802154_stats_get
+ *
+ * @param[out] p_stat_counters    Structure that will be filled with current stats counter values.
+ */
+void nrf_802154_stat_counters_get(nrf_802154_stat_counters_t * p_stat_counters);
+
+/**
+ * @brief Get total times spent in certain states.
+ *
+ * @param[out] p_stat_totals Structure that will be filled with times spent in certain states
+ *                           until now.
+ */
+void nrf_802154_stat_totals_get(nrf_802154_stat_totals_t * p_stat_totals);
 
 #endif
