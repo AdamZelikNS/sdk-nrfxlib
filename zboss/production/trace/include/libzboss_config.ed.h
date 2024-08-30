@@ -97,7 +97,7 @@
  *
  * Note: For general debugging purposes, please use 0x00000C48.
  */
-#define CONFIG_ZB_TRACE_MASK 0xFFFF
+#define CONFIG_ZB_TRACE_MASK 0xFFFFFFFF
 
 /**
  * Max compiled-in log level for ZBOSS traces - Off
