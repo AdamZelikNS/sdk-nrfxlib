@@ -36,4 +36,4 @@
  *
  * Note: This value is automatically updated by the release script.
  */
-#define ZBOSS_PATCH 7U
+#define ZBOSS_PATCH 6U
