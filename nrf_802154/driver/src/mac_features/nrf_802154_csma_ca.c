@@ -165,7 +165,9 @@ static void notify_busy_channel(bool result)
     // the comparison uses `greater or equal` instead of `greater than`.
     if (!result && (m_nb >= nrf_802154_pib_csmaca_max_backoffs_get()))
     {
+        extern void dbg0zb_ch_busy_ind(uint8_t chann_busy_type);
         notify_failed(NRF_802154_TX_ERROR_BUSY_CHANNEL);
+        dbg0zb_ch_busy_ind(2);
     }
 
     nrf_802154_log_function_exit(NRF_802154_LOG_VERBOSITY_HIGH);

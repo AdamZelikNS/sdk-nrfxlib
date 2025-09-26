@@ -2537,6 +2537,44 @@ void nrf_802154_trx_transmit_frame_ccaidle(void)
     nrf_802154_log_function_exit(NRF_802154_LOG_VERBOSITY_LOW);
 }
 
+static uint8_t volatile dbg0_ch_busy_type = 0;
+static void dbg0zb_ch_busy_cb(nrf_802154_sl_timer_t * p_timer);
+extern void dbg0zb_radio_ch_busy(uint8_t ch_busy_type, uint32_t failed_cca_cntr);
+
+static void dbg0zb_ch_busy_cb(nrf_802154_sl_timer_t * p_timer)
+{
+    if (dbg0_ch_busy_type != 0uL)
+    {
+        dbg0zb_radio_ch_busy(dbg0_ch_busy_type, g_nrf_802154_stats.counters.cca_failed_attempts);
+        dbg0_ch_busy_type = 0uL;
+    }
+}
+
+void dbg0zb_ch_busy_ind(uint8_t chann_busy_type)
+{
+    uint64_t now_ts;
+    if (dbg0_ch_busy_type == 0)
+    {
+        dbg0_ch_busy_type = chann_busy_type;
+        
+        now_ts = nrf_802154_sl_timer_current_time_get();
+        m_rx_dbg_timer.trigger_time             = now_ts + 500;
+        m_rx_dbg_timer.action_type              = NRF_802154_SL_TIMER_ACTION_TYPE_CALLBACK;
+        m_rx_dbg_timer.action.callback.callback = dbg0zb_ch_busy_cb;
+
+        nrf_802154_sl_timer_add(&m_rx_dbg_timer);        
+    }
+}
+
+__WEAK void dbg0zb_radio_ch_busy(uint8_t ch_busy_type, uint32_t failed_cca_cntr)
+{
+}
+
+uint32_t dbg0zb_failed_cca_cntr_get(void)
+{
+    return g_nrf_802154_stats.counters.cca_failed_attempts;
+}
+
 void nrf_802154_trx_transmit_frame_ccabusy(void)
 {
     nrf_802154_log_function_enter(NRF_802154_LOG_VERBOSITY_LOW);
@@ -2549,6 +2587,7 @@ void nrf_802154_trx_transmit_frame_ccabusy(void)
 
     nrf_802154_tx_work_buffer_original_frame_update(mp_tx_data, &metadata.frame_props);
     transmit_failed_notify_and_nesting_allow(NRF_802154_TX_ERROR_BUSY_CHANNEL, &metadata);
+    dbg0zb_ch_busy_ind(1);
 
     nrf_802154_log_function_exit(NRF_802154_LOG_VERBOSITY_LOW);
 }
