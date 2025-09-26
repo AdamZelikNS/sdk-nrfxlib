@@ -160,6 +160,8 @@ static nrf_802154_trx_transmit_notifications_t m_trx_transmit_frame_notification
 static volatile uint8_t      m_rx_prestarted_trig_count;
 static nrf_802154_sl_timer_t m_rx_prestarted_timer;
 
+static nrf_802154_sl_timer_t m_rx_dbg_timer;
+
 /** @brief Value of Coex TX Request mode */
 static nrf_802154_coex_tx_request_mode_t m_coex_tx_request_mode;
 
@@ -2141,6 +2143,42 @@ void nrf_802154_trx_receive_frame_received(void)
     }
 
     nrf_802154_log_function_exit(NRF_802154_LOG_VERBOSITY_LOW);
+}
+
+void dbg0zb_radio_ready(uint16_t flgs, const uint64_t volatile * tmstamps);
+static void dbg0zb_radio_rdy_cb(nrf_802154_sl_timer_t * p_timer);
+
+static uint32_t volatile rxrdy_flgs;
+static uint64_t volatile rxrdy_timings[2];
+
+void dbg0zb_rrdy_ind(uint16_t flgs, const uint64_t volatile * tmstamps)
+{
+    if (rxrdy_flgs == 0uL)
+    {
+        rxrdy_flgs = (flgs | 0x80000000uL);
+        rxrdy_timings[0] = (tmstamps[0]);
+        rxrdy_timings[1] = (tmstamps[1]);
+
+        m_rx_dbg_timer.trigger_time             = tmstamps[1] + 500;
+        m_rx_dbg_timer.action_type              = NRF_802154_SL_TIMER_ACTION_TYPE_CALLBACK;
+        m_rx_dbg_timer.action.callback.callback = dbg0zb_radio_rdy_cb;
+
+        nrf_802154_sl_timer_add(&m_rx_dbg_timer);
+    }
+}
+
+static void dbg0zb_radio_rdy_cb(nrf_802154_sl_timer_t * p_timer)
+{
+    uint32_t fl = rxrdy_flgs; 
+    if (fl != 0uL)
+    {
+        dbg0zb_radio_ready(fl, rxrdy_timings);
+        rxrdy_flgs = 0uL;
+    }
+}
+
+__WEAK void dbg0zb_radio_ready(uint16_t flgs, const uint64_t volatile * tmstamps)
+{
 }
 
 static bool fcf_is_security_enabled(const uint8_t * p_frame)

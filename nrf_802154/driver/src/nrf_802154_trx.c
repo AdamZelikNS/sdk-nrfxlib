@@ -2391,7 +2391,7 @@ static void energy_detection_abort(void)
 
 uint64_t volatile dbg0zb_timestamps[2];
 uint16_t volatile dbg0zb_ts_flags;
-extern void dbg0zb_radio_ready(uint16_t flgs, const uint64_t volatile * tmstamps);
+extern void dbg0zb_rrdy_ind(uint16_t flgs, const uint64_t volatile * tmstamps);
 extern uint64_t nrf_802154_sl_timer_current_time_get(void);
 
 static void irq_handler_ready(void)
@@ -2419,7 +2419,7 @@ static void irq_handler_ready(void)
             if (dbg_ts_flags & 1)
             {
                 dbg0zb_timestamps[1] = rdy_ts;
-                dbg0zb_radio_ready(dbg_ts_flags, dbg0zb_timestamps);
+                dbg0zb_rrdy_ind(dbg_ts_flags, dbg0zb_timestamps);
                 dbg0zb_ts_flags = 0x0000u;
             }
             break;
@@ -2431,7 +2431,7 @@ static void irq_handler_ready(void)
     nrf_802154_log_function_exit(NRF_802154_LOG_VERBOSITY_LOW);
 }
 
-__WEAK void dbg0zb_radio_ready(uint16_t flgs, const uint64_t volatile * tmstamps)
+__WEAK void dbg0zb_rrdy_ind(uint16_t flgs, const uint64_t volatile * tmstamps)
 {
 }
 
