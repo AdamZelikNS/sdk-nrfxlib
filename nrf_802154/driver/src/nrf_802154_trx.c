@@ -1379,14 +1379,18 @@ void nrf_802154_trx_receive_frame(uint8_t                                 bcc,
     nrf_radio_event_clear(NRF_RADIO, NRF_RADIO_EVENT_ADDRESS);
     ints_to_enable |= NRF_RADIO_INT_ADDRESS_MASK;
 
+    nrf_radio_event_clear(NRF_RADIO, NRF_RADIO_EVENT_READY);
     if (rampup_trigg_mode == TRX_RAMP_UP_HW_TRIGGER)
     {
-        nrf_radio_event_clear(NRF_RADIO, NRF_RADIO_EVENT_READY);
 #if !defined(NRF53_SERIES)
         ints_to_enable |= (NRF_RADIO_INT_READY_MASK | NRF_RADIO_INT_DISABLED_MASK);
 #else
         ints_to_enable |= NRF_RADIO_INT_READY_MASK;
 #endif
+    }
+    else
+    {
+        ints_to_enable |= NRF_RADIO_INT_READY_MASK; // for extra timetstamp
     }
 
     bool allow_sync_swi = false;
@@ -2385,11 +2389,19 @@ static void energy_detection_abort(void)
     nrf_802154_log_function_exit(NRF_802154_LOG_VERBOSITY_HIGH);
 }
 
+uint64_t volatile dbg0zb_timestamps[2];
+uint16_t volatile dbg0zb_ts_flags;
+extern void dbg0zb_rrdy_ind(uint16_t flgs, const uint64_t volatile * tmstamps);
+extern uint64_t nrf_802154_sl_timer_current_time_get(void);
+
 static void irq_handler_ready(void)
 {
-    nrf_802154_log_function_enter(NRF_802154_LOG_VERBOSITY_LOW);
+    uint16_t dbg_ts_flags;
+    uint64_t rdy_ts;
+    nrf_802154_log_function_enter(NRF_802154_LOG_VERBOSITY_LOW);     
 
     nrf_radio_int_disable(NRF_RADIO, NRF_RADIO_INT_READY_MASK);
+    rdy_ts = nrf_802154_sl_timer_current_time_get();
 
     nrf_802154_trx_ppi_for_ramp_up_reconfigure();
 
@@ -2403,6 +2415,13 @@ static void irq_handler_ready(void)
             break;
 
         case TRX_STATE_RXFRAME:
+            dbg_ts_flags = dbg0zb_ts_flags;
+            if (dbg_ts_flags & 1)
+            {
+                dbg0zb_timestamps[1] = rdy_ts;
+                dbg0zb_rrdy_ind(dbg_ts_flags, dbg0zb_timestamps);
+                dbg0zb_ts_flags = 0x0000u;
+            }
             break;
 
         default:
@@ -2410,6 +2429,10 @@ static void irq_handler_ready(void)
     }
 
     nrf_802154_log_function_exit(NRF_802154_LOG_VERBOSITY_LOW);
+}
+
+__WEAK void dbg0zb_rrdy_ind(uint16_t flgs, const uint64_t volatile * tmstamps)
+{
 }
 
 static void irq_handler_address(void)
@@ -2428,6 +2451,7 @@ static void irq_handler_address(void)
             {
                 nrf_802154_trx_receive_frame_started();
             }
+            dbg0zb_ts_flags = 0x0000u;
             break;
 
         case TRX_STATE_RXACK:

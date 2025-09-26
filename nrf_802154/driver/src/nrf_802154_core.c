@@ -160,6 +160,8 @@ static nrf_802154_trx_transmit_notifications_t m_trx_transmit_frame_notification
 static volatile uint8_t      m_rx_prestarted_trig_count;
 static nrf_802154_sl_timer_t m_rx_prestarted_timer;
 
+static nrf_802154_sl_timer_t m_rx_dbg_timer;
+
 /** @brief Value of Coex TX Request mode */
 static nrf_802154_coex_tx_request_mode_t m_coex_tx_request_mode;
 
@@ -168,6 +170,8 @@ static uint32_t m_rx_window_id;
 
 static const nrf_802154_transmitted_frame_props_t m_default_frame_props =
     NRF_802154_TRANSMITTED_FRAME_PROPS_DEFAULT_INIT;
+
+extern uint16_t volatile dbg0zb_ts_flags;
 
 /***************************************************************************************************
  * @section Common core operations
@@ -1048,6 +1052,8 @@ static bool tx_init(const uint8_t                       * p_data,
 {
     bool cca = cca_attempts > 0;
 
+    dbg0zb_ts_flags |= 0x8100u;
+
     if (!timeslot_is_granted() || !nrf_802154_rsch_timeslot_request(
             nrf_802154_tx_duration_get(p_data[0], cca, ack_is_requested(p_data))))
     {
@@ -1142,6 +1148,8 @@ static bool tx_init(const uint8_t                       * p_data,
 /** Initialize ED operation */
 static void ed_init(void)
 {
+    dbg0zb_ts_flags |= 0x8200u;
+    
     if (!timeslot_is_granted())
     {
         return;
@@ -1170,6 +1178,8 @@ static void ed_init(void)
 /** Initialize CCA operation. */
 static void cca_init(void)
 {
+    dbg0zb_ts_flags |= 0x8400u;
+    
     if (!timeslot_is_granted() || !nrf_802154_rsch_timeslot_request(nrf_802154_cca_duration_get()))
     {
         return;
@@ -1929,6 +1939,8 @@ void nrf_802154_trx_receive_frame_crcerror(void)
 {
     nrf_802154_log_function_enter(NRF_802154_LOG_VERBOSITY_LOW);
 
+    dbg0zb_ts_flags |= 0x8010u;
+
     NRF_802154_ASSERT(m_state == RADIO_STATE_RX);
     rx_flags_clear();
     rx_data_clear();
@@ -1955,6 +1967,8 @@ void nrf_802154_trx_receive_frame_crcerror(void)
 void nrf_802154_trx_receive_ack_crcerror(void)
 {
     nrf_802154_log_function_enter(NRF_802154_LOG_VERBOSITY_LOW);
+    
+    dbg0zb_ts_flags |= 0x8020u;
 
     NRF_802154_ASSERT(m_state == RADIO_STATE_RX_ACK);
 
@@ -1964,7 +1978,7 @@ void nrf_802154_trx_receive_ack_crcerror(void)
 }
 
 void nrf_802154_trx_receive_frame_received(void)
-{
+{    
     nrf_802154_log_function_enter(NRF_802154_LOG_VERBOSITY_LOW);
 
     uint8_t             * p_received_data = mp_current_rx_buffer->data;
@@ -2010,7 +2024,12 @@ void nrf_802154_trx_receive_frame_received(void)
 #if (NRF_802154_FRAME_TIMESTAMP_ENABLED)
         uint64_t ts = timer_coord_timestamp_get();
 
+        extern uint64_t volatile dbg0zb_timestamps[2];
+
         nrf_802154_stat_timestamp_write(last_rx_end_timestamp, ts);
+
+        dbg0zb_timestamps[0] = ts;
+        dbg0zb_ts_flags |= 1;
 #endif
 
         nrf_802154_sl_ant_div_rx_frame_received_notify();
@@ -2087,6 +2106,8 @@ void nrf_802154_trx_receive_frame_received(void)
 
                 received_frame_notify_and_nesting_allow(p_received_data);
             }
+
+            dbg0zb_ts_flags |= 0x8040u;
         }
         else
         {
@@ -2100,6 +2121,7 @@ void nrf_802154_trx_receive_frame_received(void)
 
                 switch_to_idle();
 
+                dbg0zb_ts_flags |= 0x8080u;
                 received_frame_notify_and_nesting_allow(p_received_data);
             }
             else
@@ -2121,6 +2143,42 @@ void nrf_802154_trx_receive_frame_received(void)
     }
 
     nrf_802154_log_function_exit(NRF_802154_LOG_VERBOSITY_LOW);
+}
+
+void dbg0zb_radio_ready(uint16_t flgs, const uint64_t volatile * tmstamps);
+static void dbg0zb_radio_rdy_cb(nrf_802154_sl_timer_t * p_timer);
+
+static uint32_t volatile rxrdy_flgs;
+static uint64_t volatile rxrdy_timings[2];
+
+void dbg0zb_rrdy_ind(uint16_t flgs, const uint64_t volatile * tmstamps)
+{
+    if (rxrdy_flgs == 0uL)
+    {
+        rxrdy_flgs = (flgs | 0x80000000uL);
+        rxrdy_timings[0] = (tmstamps[0]);
+        rxrdy_timings[1] = (tmstamps[1]);
+
+        m_rx_dbg_timer.trigger_time             = tmstamps[1] + 500;
+        m_rx_dbg_timer.action_type              = NRF_802154_SL_TIMER_ACTION_TYPE_CALLBACK;
+        m_rx_dbg_timer.action.callback.callback = dbg0zb_radio_rdy_cb;
+
+        nrf_802154_sl_timer_add(&m_rx_dbg_timer);
+    }
+}
+
+static void dbg0zb_radio_rdy_cb(nrf_802154_sl_timer_t * p_timer)
+{
+    uint32_t fl = rxrdy_flgs; 
+    if (fl != 0uL)
+    {
+        dbg0zb_radio_ready(fl, rxrdy_timings);
+        rxrdy_flgs = 0uL;
+    }
+}
+
+__WEAK void dbg0zb_radio_ready(uint16_t flgs, const uint64_t volatile * tmstamps)
+{
 }
 
 static bool fcf_is_security_enabled(const uint8_t * p_frame)
