@@ -43,6 +43,7 @@
 
 #include "nrf_802154_co.h"
 #include "nrf_802154_debug.h"
+#include "nrf_802154_const.h"
 
 void nrf_802154_co_cca_done(bool channel_free)
 {
@@ -114,6 +115,16 @@ void nrf_802154_co_receive_failed(nrf_802154_rx_error_t error, uint32_t id)
     nrf_802154_log_function_exit(NRF_802154_LOG_VERBOSITY_LOW);
 }
 
+extern void dbg0zb_tx_beacon_result(uint16_t err_code, uint16_t fr_seq_nm);
+
+static void dbg0zb_tx_beacon_notif(const uint8_t * fr_ptr, uint16_t err_id)
+{
+    if ((fr_ptr[FRAME_TYPE_OFFSET] & FRAME_TYPE_MASK) == FRAME_TYPE_BEACON)
+    {
+        dbg0zb_tx_beacon_result(err_id, fr_ptr[DSN_OFFSET]);
+    }
+}
+
 #if NRF_802154_USE_RAW_API || defined(DOXYGEN)
 
 void nrf_802154_co_transmitted_raw(uint8_t                                   * p_frame,
@@ -121,6 +132,7 @@ void nrf_802154_co_transmitted_raw(uint8_t                                   * p
 {
     nrf_802154_log_function_enter(NRF_802154_LOG_VERBOSITY_LOW);
     nrf_802154_transmitted_raw(p_frame, p_metadata);
+    dbg0zb_tx_beacon_notif(p_frame, 0);
     nrf_802154_log_function_exit(NRF_802154_LOG_VERBOSITY_LOW);
 }
 
@@ -133,6 +145,7 @@ void nrf_802154_co_transmitted(uint8_t                                   * p_fra
 {
     nrf_802154_log_function_enter(NRF_802154_LOG_VERBOSITY_LOW);
     nrf_802154_transmitted(p_frame, p_metadata);
+    dbg0zb_tx_beacon_notif(p_frame, 0);
     nrf_802154_log_function_exit(NRF_802154_LOG_VERBOSITY_LOW);
 }
 
@@ -144,7 +157,12 @@ void nrf_802154_co_transmit_failed(uint8_t                                   * p
 {
     nrf_802154_log_function_enter(NRF_802154_LOG_VERBOSITY_LOW);
     nrf_802154_transmit_failed(p_frame, error, p_metadata);
+    dbg0zb_tx_beacon_notif(p_frame, error);
     nrf_802154_log_function_exit(NRF_802154_LOG_VERBOSITY_LOW);
+}
+
+__WEAK void dbg0zb_tx_beacon_result(uint16_t err_code, uint16_t fr_seq_nm)
+{
 }
 
 #if !NRF_802154_SERIALIZATION_HOST || defined(DOXYGEN)
