@@ -224,7 +224,24 @@ static void frame_transmit(rsch_dly_ts_id_t dly_ts_id)
  */
 static uint8_t backoff_periods_calc_random(void)
 {
-    return nrf_802154_random_get() % (1U << m_be);
+    extern void dbg0zb_csma_ca_next_backoff_period(uint16_t backoff_val);
+    uint8_t periods_calcd = nrf_802154_random_get() % (1U << m_be);
+    dbg0zb_csma_ca_next_backoff_period(periods_calcd);
+    return periods_calcd;
+}
+
+__WEAK void dbg0zb_csma_ca_next_backoff_period(uint16_t uint8_t)
+{
+}
+
+uint8_t dbg0zb_csma_ca_st_get(uint16_t * pib_max_backoffs)
+{
+    if (pib_max_backoffs != (uint16_t *)0)
+    {
+        (*pib_max_backoffs) = nrf_802154_pib_csmaca_max_backoffs_get();
+    }
+
+    return ((m_state == CSMA_CA_STATE_IDLE) ? 0 : 1);
 }
 
 /**
