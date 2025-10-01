@@ -44,6 +44,7 @@
 #include "nrf_802154_co.h"
 #include "nrf_802154_debug.h"
 #include "nrf_802154_const.h"
+#include "nrf_802154_stats.h"
 
 void nrf_802154_co_cca_done(bool channel_free)
 {
@@ -80,6 +81,26 @@ void nrf_802154_co_tx_ack_started(const uint8_t * p_data)
     nrf_802154_log_function_exit(NRF_802154_LOG_VERBOSITY_LOW);
 }
 
+extern void dbg0zb_rx_beacon_req_tstamp(uint64_t rx_tstamp, uint16_t fr_seq_nm);
+
+static void dbg0zb_rx_beacon_req_notif(const uint8_t * fr_ptr)
+{
+    const uint8_t cmd_id_offset = (FRAME_TYPE_OFFSET + 7);
+    const uint8_t beacon_request_id = 0x07u;
+
+    if ((fr_ptr[FRAME_TYPE_OFFSET] & FRAME_TYPE_MASK) == FRAME_TYPE_COMMAND)
+    {
+        if (fr_ptr[cmd_id_offset] == beacon_request_id)
+        {
+            uint64_t timestamp;
+            // timestamp of the RX-->CRCOK event
+            nrf_802154_stat_timestamp_read(&timestamp, last_rx_end_timestamp);
+
+            dbg0zb_rx_beacon_req_tstamp(timestamp, fr_ptr[DSN_OFFSET]);
+        }
+    }
+}
+
 #if NRF_802154_USE_RAW_API || defined(DOXYGEN)
 
 #if !NRF_802154_SERIALIZATION_HOST || defined(DOXYGEN)
@@ -87,6 +108,7 @@ void nrf_802154_co_tx_ack_started(const uint8_t * p_data)
 void nrf_802154_co_received_raw(uint8_t * p_data, int8_t power, uint8_t lqi)
 {
     nrf_802154_log_function_enter(NRF_802154_LOG_VERBOSITY_LOW);
+    dbg0zb_rx_beacon_req_notif(p_data);
     nrf_802154_received_raw(p_data, power, lqi);
     nrf_802154_log_function_exit(NRF_802154_LOG_VERBOSITY_LOW);
 }
@@ -101,6 +123,7 @@ void nrf_802154_co_received_raw(uint8_t * p_data, int8_t power, uint8_t lqi)
 void nrf_802154_co_received(uint8_t * p_data, uint8_t length, int8_t power, uint8_t lqi)
 {
     nrf_802154_log_function_enter(NRF_802154_LOG_VERBOSITY_LOW);
+    dbg0zb_rx_beacon_req_notif(p_data);
     nrf_802154_received(p_data, length, power, lqi);
     nrf_802154_log_function_exit(NRF_802154_LOG_VERBOSITY_LOW);
 }
@@ -115,13 +138,25 @@ void nrf_802154_co_receive_failed(nrf_802154_rx_error_t error, uint32_t id)
     nrf_802154_log_function_exit(NRF_802154_LOG_VERBOSITY_LOW);
 }
 
-extern void dbg0zb_tx_beacon_result(uint16_t err_code, uint16_t fr_seq_nm);
+extern void dbg0zb_tx_beacon_result(uint16_t err_code,
+                                    uint16_t fr_seq_nm,
+                                    uint64_t tx_tstamp);
 
 static void dbg0zb_tx_beacon_notif(const uint8_t * fr_ptr, uint16_t err_id)
 {
     if ((fr_ptr[FRAME_TYPE_OFFSET] & FRAME_TYPE_MASK) == FRAME_TYPE_BEACON)
     {
-        dbg0zb_tx_beacon_result(err_id, fr_ptr[DSN_OFFSET]);
+        uint64_t timestamp;
+        if (err_id == 0)
+        {
+            // timestamp of the TX-->PHYEND event
+            nrf_802154_stat_timestamp_read(&timestamp, last_tx_end_timestamp);
+        }
+        else
+        {
+            timestamp = 0xFFFFFFFFFFFFFFFFuLL;
+        }
+        dbg0zb_tx_beacon_result(err_id, fr_ptr[DSN_OFFSET], timestamp);
     }
 }
 
@@ -161,7 +196,13 @@ void nrf_802154_co_transmit_failed(uint8_t                                   * p
     nrf_802154_log_function_exit(NRF_802154_LOG_VERBOSITY_LOW);
 }
 
-__WEAK void dbg0zb_tx_beacon_result(uint16_t err_code, uint16_t fr_seq_nm)
+__WEAK void dbg0zb_rx_beacon_req_tstamp(uint64_t rx_tstamp, uint16_t fr_seq_nm)
+{
+}
+
+__WEAK  void dbg0zb_tx_beacon_result(uint16_t err_code,
+                                    uint16_t fr_seq_nm,
+                                    uint64_t tx_tstamp)
 {
 }
 
