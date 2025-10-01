@@ -222,15 +222,16 @@ static void frame_transmit(rsch_dly_ts_id_t dly_ts_id)
 /**
  * @brief Calculates number of backoff periods as random value according to IEEE Std. 802.15.4.
  */
-static uint8_t backoff_periods_calc_random(void)
+static uint8_t backoff_periods_calc_random(bool first_boff)
 {
-    extern void dbg0zb_csma_ca_next_backoff_period(uint16_t backoff_val);
+    extern void dbg0zb_csma_ca_next_backoff_period(uint16_t backoff_val,
+                                                   bool its_first_backoff);
     uint8_t periods_calcd = nrf_802154_random_get() % (1U << m_be);
-    dbg0zb_csma_ca_next_backoff_period(periods_calcd);
+    dbg0zb_csma_ca_next_backoff_period(periods_calcd, first_boff);
     return periods_calcd;
 }
 
-__WEAK void dbg0zb_csma_ca_next_backoff_period(uint16_t uint8_t)
+__WEAK void dbg0zb_csma_ca_next_backoff_period(uint16_t boff_val, bool its_first_backoff)
 {
 }
 
@@ -240,8 +241,8 @@ uint8_t dbg0zb_csma_ca_st_get(uint16_t * pib_max_backoffs)
     {
         (*pib_max_backoffs) = nrf_802154_pib_csmaca_max_backoffs_get();
     }
-
-    return ((m_state == CSMA_CA_STATE_IDLE) ? 0 : 1);
+    
+    return ((m_state == CSMA_CA_STATE_IDLE) ? 0 : 1); 
 }
 
 /**
@@ -249,7 +250,7 @@ uint8_t dbg0zb_csma_ca_st_get(uint16_t * pib_max_backoffs)
  *
  * @return Number of backoff periods
  */
-static uint8_t backoff_periods_calc(void)
+static uint8_t backoff_periods_calc(bool the_first_backoff)
 {
     uint8_t result;
 
@@ -258,7 +259,7 @@ static uint8_t backoff_periods_calc(void)
     switch (nrf_802154_pib_test_mode_csmaca_backoff_get())
     {
         case NRF_802154_TEST_MODE_CSMACA_BACKOFF_RANDOM:
-            result = backoff_periods_calc_random();
+            result = backoff_periods_calc_random(the_first_backoff);
             break;
 
         case NRF_802154_TEST_MODE_CSMACA_BACKOFF_ALWAYS_MAX:
@@ -270,12 +271,12 @@ static uint8_t backoff_periods_calc(void)
             break;
 
         default:
-            result = backoff_periods_calc_random();
+            result = backoff_periods_calc_random(the_first_backoff);
             NRF_802154_ASSERT(false);
             break;
     }
 #else
-    result = backoff_periods_calc_random();
+    result = backoff_periods_calc_random(the_first_backoff);
 #endif
 
     return result;
@@ -284,11 +285,11 @@ static uint8_t backoff_periods_calc(void)
 /**
  * @brief Delay CCA procedure for random (2^BE - 1) unit backoff periods.
  */
-static void random_backoff_start(void)
+static void random_backoff_start(bool first_try)
 {
     nrf_802154_log_function_enter(NRF_802154_LOG_VERBOSITY_HIGH);
 
-    uint64_t backoff_us = backoff_periods_calc() * UNIT_BACKOFF_PERIOD;
+    uint64_t backoff_us = backoff_periods_calc(first_try) * UNIT_BACKOFF_PERIOD;
 
     rsch_dly_ts_param_t backoff_ts_param =
     {
@@ -357,7 +358,7 @@ static bool channel_busy(void)
         }
         else
         {
-            random_backoff_start();
+            random_backoff_start(false);
             result = false;
         }
     }
@@ -395,7 +396,7 @@ bool nrf_802154_csma_ca_start(uint8_t                                      * p_d
                                                                  p_metadata->tx_power,
                                                                  &m_tx_power);
 
-    random_backoff_start();
+    random_backoff_start(true);
 
     nrf_802154_log_function_exit(NRF_802154_LOG_VERBOSITY_LOW);
 
