@@ -225,13 +225,14 @@ static void frame_transmit(rsch_dly_ts_id_t dly_ts_id)
 static uint8_t backoff_periods_calc_random(bool first_boff)
 {
     extern void dbg0zb_csma_ca_next_backoff_period(uint16_t backoff_val,
+                                                   uint16_t be_exp_val,
                                                    bool its_first_backoff);
     uint8_t periods_calcd = nrf_802154_random_get() % (1U << m_be);
-    dbg0zb_csma_ca_next_backoff_period(periods_calcd, first_boff);
+    dbg0zb_csma_ca_next_backoff_period(periods_calcd, m_be, first_boff);
     return periods_calcd;
 }
 
-__WEAK void dbg0zb_csma_ca_next_backoff_period(uint16_t boff_val, bool its_first_backoff)
+__WEAK void dbg0zb_csma_ca_next_backoff_period(uint16_t boff_val, uint16_t be_exp_val, bool its_first_backoff)
 {
 }
 
