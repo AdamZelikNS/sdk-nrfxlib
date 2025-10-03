@@ -214,6 +214,58 @@ void nrf_802154_pib_init(void)
 
 }
 
+#if !defined(NRF_802154_CSMA_CA_MIN_BE_DEFAULT)
+#pragma message "<><><><><> Undefined NRF_802154_CSMA_CA_MIN_BE_DEFAULT <><><><><>"
+#elif (NRF_802154_CSMA_CA_MIN_BE_DEFAULT == 0)
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MIN_BE_DEFAULT == 0 <><><><><>" 
+#elif (NRF_802154_CSMA_CA_MIN_BE_DEFAULT == 1)
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MIN_BE_DEFAULT == 1 <><><><><>"
+#elif (NRF_802154_CSMA_CA_MIN_BE_DEFAULT == 2)
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MIN_BE_DEFAULT == 2 <><><><><>"
+#elif (NRF_802154_CSMA_CA_MIN_BE_DEFAULT == 3)
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MIN_BE_DEFAULT == 3 <><><><><>"
+#elif (NRF_802154_CSMA_CA_MIN_BE_DEFAULT == 4)                    
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MIN_BE_DEFAULT == 4 <><><><><>"
+#elif (NRF_802154_CSMA_CA_MIN_BE_DEFAULT == 5)
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MIN_BE_DEFAULT == 5 <><><><><>"
+#elif (NRF_802154_CSMA_CA_MIN_BE_DEFAULT == 6)
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MIN_BE_DEFAULT == 6 <><><><><>"
+#elif (NRF_802154_CSMA_CA_MIN_BE_DEFAULT == 7)
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MIN_BE_DEFAULT == 7 <><><><><>"
+#elif (NRF_802154_CSMA_CA_MIN_BE_DEFAULT == 8)
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MIN_BE_DEFAULT == 8 <><><><><>"
+#elif (NRF_802154_CSMA_CA_MIN_BE_DEFAULT == 9)
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MIN_BE_DEFAULT == 9 <><><><><>"
+#else
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MIN_BE_DEFAULT is above 9 <><><><><>" 
+#endif
+
+#if !defined(NRF_802154_CSMA_CA_MAX_BE_DEFAULT)
+#pragma message "<><><><><> Undefined NRF_802154_CSMA_CA_MAX_BE_DEFAULT <><><><><>"
+#elif (NRF_802154_CSMA_CA_MAX_BE_DEFAULT == 0)
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MAX_BE_DEFAULT == 0 <><><><><>" 
+#elif (NRF_802154_CSMA_CA_MAX_BE_DEFAULT == 1)
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MAX_BE_DEFAULT == 1 <><><><><>"
+#elif (NRF_802154_CSMA_CA_MAX_BE_DEFAULT == 2)
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MAX_BE_DEFAULT == 2 <><><><><>"
+#elif (NRF_802154_CSMA_CA_MAX_BE_DEFAULT == 3)
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MAX_BE_DEFAULT == 3 <><><><><>"
+#elif (NRF_802154_CSMA_CA_MAX_BE_DEFAULT == 4)
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MAX_BE_DEFAULT == 4 <><><><><>"
+#elif (NRF_802154_CSMA_CA_MAX_BE_DEFAULT == 5)
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MAX_BE_DEFAULT == 5 <><><><><>"
+#elif (NRF_802154_CSMA_CA_MAX_BE_DEFAULT == 6)
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MAX_BE_DEFAULT == 6 <><><><><>"
+#elif (NRF_802154_CSMA_CA_MAX_BE_DEFAULT == 7)
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MAX_BE_DEFAULT == 7 <><><><><>"
+#elif (NRF_802154_CSMA_CA_MAX_BE_DEFAULT == 8)
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MAX_BE_DEFAULT == 8 <><><><><>"
+#elif (NRF_802154_CSMA_CA_MAX_BE_DEFAULT == 9)
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MAX_BE_DEFAULT == 9 <><><><><>"
+#else
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MAX_BE_DEFAULT is above 9 <><><><><>" 
+#endif 
+
 bool nrf_802154_pib_promiscuous_get(void)
 {
     return m_data.promiscuous;
