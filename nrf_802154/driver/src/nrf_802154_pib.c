@@ -197,15 +197,9 @@ void nrf_802154_pib_init(void)
     m_data.coex.tx_request_mode = NRF_802154_COEX_TX_REQUEST_MODE_ON_CCA_TOGGLE;
 
 #if NRF_802154_CSMA_CA_ENABLED
-#if 1
     m_data.csmaca.min_be       = NRF_802154_CSMA_CA_MIN_BE_DEFAULT;
     m_data.csmaca.max_be       = NRF_802154_CSMA_CA_MAX_BE_DEFAULT;
     m_data.csmaca.max_backoffs = NRF_802154_CSMA_CA_MAX_CSMA_BACKOFFS_DEFAULT;
-#elif 0
-    m_data.csmaca.min_be       = 5;
-    m_data.csmaca.max_be       = 8;
-    m_data.csmaca.max_backoffs = NRF_802154_CSMA_CA_MAX_CSMA_BACKOFFS_DEFAULT;
-#endif
 #endif // NRF_802154_CSMA_CA_ENABLED
 
 #if NRF_802154_IFS_ENABLED
@@ -219,6 +213,58 @@ void nrf_802154_pib_init(void)
 #endif
 
 }
+
+#if !defined(NRF_802154_CSMA_CA_MIN_BE_DEFAULT)
+#pragma message "<><><><><> Undefined NRF_802154_CSMA_CA_MIN_BE_DEFAULT <><><><><>"
+#elif (NRF_802154_CSMA_CA_MIN_BE_DEFAULT == 0)
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MIN_BE_DEFAULT == 0 <><><><><>" 
+#elif (NRF_802154_CSMA_CA_MIN_BE_DEFAULT == 1)
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MIN_BE_DEFAULT == 1 <><><><><>"
+#elif (NRF_802154_CSMA_CA_MIN_BE_DEFAULT == 2)
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MIN_BE_DEFAULT == 2 <><><><><>"
+#elif (NRF_802154_CSMA_CA_MIN_BE_DEFAULT == 3)
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MIN_BE_DEFAULT == 3 <><><><><>"
+#elif (NRF_802154_CSMA_CA_MIN_BE_DEFAULT == 4)                    
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MIN_BE_DEFAULT == 4 <><><><><>"
+#elif (NRF_802154_CSMA_CA_MIN_BE_DEFAULT == 5)
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MIN_BE_DEFAULT == 5 <><><><><>"
+#elif (NRF_802154_CSMA_CA_MIN_BE_DEFAULT == 6)
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MIN_BE_DEFAULT == 6 <><><><><>"
+#elif (NRF_802154_CSMA_CA_MIN_BE_DEFAULT == 7)
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MIN_BE_DEFAULT == 7 <><><><><>"
+#elif (NRF_802154_CSMA_CA_MIN_BE_DEFAULT == 8)
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MIN_BE_DEFAULT == 8 <><><><><>"
+#elif (NRF_802154_CSMA_CA_MIN_BE_DEFAULT == 9)
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MIN_BE_DEFAULT == 9 <><><><><>"
+#else
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MIN_BE_DEFAULT is above 9 <><><><><>" 
+#endif
+
+#if !defined(NRF_802154_CSMA_CA_MAX_BE_DEFAULT)
+#pragma message "<><><><><> Undefined NRF_802154_CSMA_CA_MAX_BE_DEFAULT <><><><><>"
+#elif (NRF_802154_CSMA_CA_MAX_BE_DEFAULT == 0)
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MAX_BE_DEFAULT == 0 <><><><><>" 
+#elif (NRF_802154_CSMA_CA_MAX_BE_DEFAULT == 1)
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MAX_BE_DEFAULT == 1 <><><><><>"
+#elif (NRF_802154_CSMA_CA_MAX_BE_DEFAULT == 2)
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MAX_BE_DEFAULT == 2 <><><><><>"
+#elif (NRF_802154_CSMA_CA_MAX_BE_DEFAULT == 3)
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MAX_BE_DEFAULT == 3 <><><><><>"
+#elif (NRF_802154_CSMA_CA_MAX_BE_DEFAULT == 4)
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MAX_BE_DEFAULT == 4 <><><><><>"
+#elif (NRF_802154_CSMA_CA_MAX_BE_DEFAULT == 5)
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MAX_BE_DEFAULT == 5 <><><><><>"
+#elif (NRF_802154_CSMA_CA_MAX_BE_DEFAULT == 6)
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MAX_BE_DEFAULT == 6 <><><><><>"
+#elif (NRF_802154_CSMA_CA_MAX_BE_DEFAULT == 7)
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MAX_BE_DEFAULT == 7 <><><><><>"
+#elif (NRF_802154_CSMA_CA_MAX_BE_DEFAULT == 8)
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MAX_BE_DEFAULT == 8 <><><><><>"
+#elif (NRF_802154_CSMA_CA_MAX_BE_DEFAULT == 9)
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MAX_BE_DEFAULT == 9 <><><><><>"
+#else
+#pragma message "<><><><><> NRF_802154_CSMA_CA_MAX_BE_DEFAULT is above 9 <><><><><>" 
+#endif 
 
 bool nrf_802154_pib_promiscuous_get(void)
 {
@@ -378,12 +424,12 @@ nrf_802154_coex_tx_request_mode_t nrf_802154_pib_coex_tx_request_mode_get(void)
 bool nrf_802154_pib_csmaca_min_be_set(uint8_t min_be)
 {
     bool result = (min_be <= CSMACA_BE_MAXIMUM);
-#if 0
+
     if (result)
     {
         m_data.csmaca.min_be = min_be;
     }
-#endif
+
     return result;
 }
 
@@ -395,12 +441,12 @@ uint8_t nrf_802154_pib_csmaca_min_be_get(void)
 bool nrf_802154_pib_csmaca_max_be_set(uint8_t max_be)
 {
     bool result = (max_be <= CSMACA_BE_MAXIMUM);
-#if 0
+
     if (result)
     {
         m_data.csmaca.max_be = max_be;
     }
-#endif
+
     return result;
 }
 
