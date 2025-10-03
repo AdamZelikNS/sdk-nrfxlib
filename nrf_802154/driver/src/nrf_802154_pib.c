@@ -197,11 +197,11 @@ void nrf_802154_pib_init(void)
     m_data.coex.tx_request_mode = NRF_802154_COEX_TX_REQUEST_MODE_ON_CCA_TOGGLE;
 
 #if NRF_802154_CSMA_CA_ENABLED
-#if 0
+#if 1
     m_data.csmaca.min_be       = NRF_802154_CSMA_CA_MIN_BE_DEFAULT;
     m_data.csmaca.max_be       = NRF_802154_CSMA_CA_MAX_BE_DEFAULT;
     m_data.csmaca.max_backoffs = NRF_802154_CSMA_CA_MAX_CSMA_BACKOFFS_DEFAULT;
-#elif 1
+#elif 0
     m_data.csmaca.min_be       = 5;
     m_data.csmaca.max_be       = 8;
     m_data.csmaca.max_backoffs = NRF_802154_CSMA_CA_MAX_CSMA_BACKOFFS_DEFAULT;
