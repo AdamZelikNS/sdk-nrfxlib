@@ -38,6 +38,12 @@
  *
  */
 
+#ifdef NRF_802154_PROJECT_CONFIG
+#pragma message "<><><><><> NRF_802154_PROJECT_CONFIG incl <><><><><>" 
+#else
+#pragma message "<><><><><> NRF_802154_PROJECT_CONFIG undef <><><><><>"
+#endif
+
 #include "nrf_802154_pib.h"
 
 #include "nrf_802154_assert.h"

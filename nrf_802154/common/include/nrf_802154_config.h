@@ -36,6 +36,7 @@
 #define NRF_802154_CONFIG_H__
 
 #ifdef NRF_802154_PROJECT_CONFIG
+#pragma message "<><><><><> incl NRF_802154_PROJECT_CONFIG <><><><><>" 
 #include NRF_802154_PROJECT_CONFIG
 #endif
 
