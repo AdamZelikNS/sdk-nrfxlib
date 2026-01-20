@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
 #
 
-if (CONFIG_NRF_802154_RADIO_DRIVER)
+if (CONFIG_NRF_802154_RADIO_DRIVER OR CONFIG_NRF_802154_SL)
 
 add_library(nrf-802154-sl INTERFACE)
 
